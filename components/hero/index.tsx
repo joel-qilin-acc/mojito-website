@@ -4,12 +4,16 @@ import { useGSAP } from '@gsap/react'
 import { ScrollTrigger, SplitText } from 'gsap/all'
 import Image from 'next/image'
 import gsap from 'gsap'
+import { useRef } from 'react'
+import { useMediaQuery } from 'react-responsive'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 
 type Props = {}
 
 const Hero = (props: Props) => {
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const isMobile = useMediaQuery({ maxWidth: 767 })
     useGSAP(() => {
         const heroSplit = new SplitText('.title', { type: 'chars , words' })
 
@@ -48,6 +52,36 @@ const Hero = (props: Props) => {
             .to(".left-leaf", { y: -200 }, 0)
             .to(".arrow", { y: 100 }, 0);
 
+        const startValue = isMobile ? "top 50%" : "center 60%";
+        const endValue = isMobile ? "120% top" : "bottom top";
+
+        let tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "video",
+                start: startValue,
+                end: endValue,
+                scrub: true,
+                pin: true,
+            },
+        });
+
+
+        const setVideoDuration = () => {
+            if (videoRef.current) {
+                tl.to(videoRef.current, {
+                    currentTime: videoRef.current.duration
+                })
+            }
+        }
+
+        if (videoRef.current) {
+            if (videoRef.current.readyState >= 1) {
+                setVideoDuration();
+            } else {
+                videoRef.current.onloadedmetadata = setVideoDuration;
+            }
+        }
+
 
     }, [])
     return (
@@ -57,14 +91,14 @@ const Hero = (props: Props) => {
                 <img
                     src={'/images/hero-left-leaf.png'}
                     alt='leaf-image'
-                    
+
                     className='left-leaf'
                 />
 
                 <img
                     src={'/images/hero-right-leaf.png'}
                     alt='right-image'
-                   
+
                     className='right-leaf'
                 />
 
@@ -87,6 +121,11 @@ const Hero = (props: Props) => {
                 </div>
 
             </section>
+
+
+            <div className="video absolute inset-0">
+                <video ref={videoRef} src="/videos/output.mp4" muted playsInline preload='auto' />
+            </div>
 
         </>
     )
