@@ -1,14 +1,12 @@
-import gsap from "gsap";
-import { ScrollTrigger, SplitText } from "gsap/all";
-
-
-gsap.registerPlugin(ScrollTrigger, SplitText);
-
+import Hero from "@/components/hero";
+import Navbar from "@/components/navbar";
 
 export default function Home() {
   return (
-    <div className="flex-center h-[100vh] ">
-    <h1 className="text-3xl text-blue-400">Hello World</h1>
-    </div>
+    <main>
+      <Navbar />
+      <Hero />
+      <div className="h-dvh bg-black"></div>
+    </main>
   );
 }
